@@ -64,7 +64,7 @@ class _HomePageState extends State<HomePage>
             fit: BoxFit.contain,
              ),
            ),
-            Container(
+            Expanded(
                 child: Center(
               child: RaisedButton(
                 textColor: textColor,
