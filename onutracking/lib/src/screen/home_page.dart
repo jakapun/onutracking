@@ -57,10 +57,10 @@ class _HomePageState extends State<HomePage>
           children: <Widget>[
             // _configCard(),
             Container(
-            width: 240.0,
-            height: 240.0,
+            width: 300.0,
+            height: 300.0,
             child: Image.asset(
-            'images/odn_0.jpg',
+            'images/login1.png',
             fit: BoxFit.contain,
              ),
            ),
