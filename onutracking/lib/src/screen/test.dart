@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:onutracking/src/screen/api_page.dart';
 import 'package:onutracking/src/screen/register.dart';
@@ -29,6 +30,25 @@ class _TestfullState extends State<Testfull> {
     setState(() {
       nameString = widget.data;
     });
+  }
+
+  Future<bool> _onBackPressed(){
+    return showDialog(
+      context: context,
+      builder: (context)=>CupertinoAlertDialog(
+        title: Text('คุณต้องการ ออกจากระบบ \r\n แต่ไม่ออกจาก login line \r\n หริอไม่ ?'),
+        actions: <Widget>[
+          FlatButton(
+            child: Text('No'),
+            onPressed: ()=>Navigator.pop(context, false),
+          ),
+          FlatButton(
+            child: Text('Yes'),
+            onPressed: ()=>Navigator.pop(context, true),
+          )
+        ],
+      )
+    );
   }
 
   Widget showLogo() {
@@ -132,7 +152,7 @@ class _TestfullState extends State<Testfull> {
       alignment: Alignment.topLeft,
       child: ListTile(
         title: Text(
-          'My Service',
+          '-> ONU Tracking',
           style: TextStyle(color: Colors.white),
         ),
         subtitle: Text(
@@ -172,15 +192,17 @@ class _TestfullState extends State<Testfull> {
     //     ),
     //   ),
     // );
-    return Scaffold(
+    return WillPopScope(
+      onWillPop: _onBackPressed,
+      child: new Scaffold(
     
       appBar: AppBar(
-        backgroundColor: Colors.green,
+        backgroundColor: Colors.blue,
         title: showLogin(),
         actions: <Widget>[uploadButton()],
       ),
       body: myWidget,
       drawer: myDrawer(),
-    );
+    ));
   }
 }

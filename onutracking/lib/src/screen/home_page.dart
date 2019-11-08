@@ -70,7 +70,7 @@ class _HomePageState extends State<HomePage>
                 textColor: textColor,
                 color: accentColor,
                 onPressed: _signIn,
-                child: Text('ล็อกอิน ..'),
+                child: Text('Login With Line'),
               ),
             )),
           ],

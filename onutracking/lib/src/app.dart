@@ -14,7 +14,7 @@ class App extends StatelessWidget {
         length: 1,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('ONU Tracking ล็อกอินด้วย LINE'),
+            title: const Text('ONU Tracking'),
             bottom: TabBar(
               tabs: [
                 Tab(text: "User"),
