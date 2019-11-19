@@ -14,14 +14,14 @@ class App extends StatelessWidget {
         length: 1,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('ONU Tracking'),
-            bottom: TabBar(
-              tabs: [
-                Tab(text: "User"),
-                // Tab(text: "API"),
-              ],
-              indicatorColor: null,
-            ),
+            title: const Text('ONU Storage'),
+            // bottom: TabBar(
+            //   tabs: [
+            //     Tab(text: "User"),
+            //     // Tab(text: "API"),
+            //   ],
+            //   indicatorColor: null,
+            // ),
           ),
           body: TabBarView(
             children: [

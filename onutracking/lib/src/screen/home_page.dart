@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_line_sdk/flutter_line_sdk.dart';
+import 'package:onutracking/src/widget/clone_userinfo.dart';
 import '../theme.dart';
-import '../widget/user_info_widget.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -52,18 +52,18 @@ class _HomePageState extends State<HomePage>
     super.build(context);
     if (_userProfile == null) {
       return Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(70.0),
         child: Column(
           children: <Widget>[
             // _configCard(),
             Container(
-            width: 300.0,
-            height: 300.0,
-            child: Image.asset(
-            'images/login1.png',
-            fit: BoxFit.contain,
-             ),
-           ),
+              width: 300.0,
+              height: 300.0,
+              child: Image.asset(
+                'images/login1.png',
+                fit: BoxFit.contain,
+              ),
+            ),
             Expanded(
                 child: Center(
               child: RaisedButton(
@@ -76,11 +76,28 @@ class _HomePageState extends State<HomePage>
           ],
         ),
       );
-    } else {  // return UserInfoWidget(
-      return UserInfoWidget(
+    } else {
+      // return UserInfoWidget(
+      // return UserInfoWidget(
+      //     userProfile: _userProfile,
+      //     accessToken: _accessToken,
+      //     onSignOutPressed: _signOut);
+      return CloneUser(
           userProfile: _userProfile,
           accessToken: _accessToken,
-          onSignOutPressed: _signOut);
+          // onSignOutPressed: () async {
+          //   try {
+          //     await LineSDK.instance.logout();
+          //     setState(() {
+          //       _userProfile = null;
+          //       _accessToken = null;
+          //     });
+          //   } on PlatformException catch (e) {
+          //     print(e.message);
+          //   }
+          // }
+          onSignOutPressed: _signOut
+          );
     }
   }
 
