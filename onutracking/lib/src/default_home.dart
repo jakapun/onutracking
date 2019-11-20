@@ -30,7 +30,7 @@ class _DefaultHomeState extends State<DefaultHome> {
           // child: (piclocation.isNotEmpty)
           //   ? Image.network(piclocation, width: 200, height: 200)
           //   : Icon(Icons.person),
-          child: Text('User กำลังล็อกอินด้วย Line \r\n กรุณาปัดที่ขอบจอด้านซ้าย \r\n เลือก ลงทะเบียน User',
+          child: Text('User กำลังล็อกอินด้วย Line \r\n กรุณาปัดที่ขอบจอด้านซ้าย \r\n เลือก ทำรายการ',
           style: TextStyle(fontSize: 18.0, color: Colors.green.shade900),)
           // child: Text('Login by $nameString'),
         ),

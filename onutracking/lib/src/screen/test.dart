@@ -7,7 +7,7 @@ import 'package:onutracking/src/screen/import_onu.dart';
 import 'package:onutracking/src/screen/install_onu.dart';
 import 'package:onutracking/src/screen/payed_onu.dart';
 import 'package:onutracking/src/screen/pickup_onu.dart';
-import 'package:onutracking/src/screen/register.dart';
+// import 'package:onutracking/src/screen/register.dart';
 import 'package:onutracking/src/screen/reused_onu.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -321,7 +321,7 @@ class _TestfullState extends State<Testfull> {
       leading: Icon(Icons.info),
       title: Text('Information'),onTap: (){
         setState(() {
-          myWidget = Register();
+          // myWidget = Register();
           Navigator.of(context).pop();
         });
       },

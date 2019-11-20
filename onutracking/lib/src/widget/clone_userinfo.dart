@@ -29,7 +29,6 @@ class CloneUser extends StatefulWidget {
 }
 
 class _CloneUserState extends State<CloneUser> {
-
   final formKey = GlobalKey<FormState>();
   final scaffoldKey = GlobalKey<ScaffoldState>();
   var uid = '';
@@ -52,26 +51,27 @@ class _CloneUserState extends State<CloneUser> {
     checkAuthen();
   }
 
-  Future<bool> _onBackPressed(){
+  Future<bool> _onBackPressed() {
     return showDialog(
-      context: context,
-      builder: (context)=>CupertinoAlertDialog(
-        title: Text('$nameString ต้องการ ออกจากระบบ \r\n แต่ไม่ออกจาก login line \r\n หริอไม่ ?'),
-        actions: <Widget>[
-          FlatButton(
-            child: Text('No'),
-            onPressed: ()=>Navigator.pop(context, false),
-          ),
-          FlatButton(
-            child: Text('Yes'),
-            onPressed: (){
-              widget.onSignOutPressed();
-              Navigator.pop(context, true);
-            }
-          )
-        ],
-      )
-    );
+        context: context,
+        builder: (context) => CupertinoAlertDialog(
+              title: Text('$nameString \r\n ต้องการ ออกจากระบบ หริอไม่?',
+                  style: TextStyle(fontSize: 17.0, color: Colors.blue[700])),
+              actions: <Widget>[
+                FlatButton(
+                  child: Text('No',
+                  style: TextStyle(fontSize: 17.0, color: Colors.black)),
+                  onPressed: () => Navigator.pop(context, false),
+                ),
+                FlatButton(
+                    child: Text('Yes',
+                    style: TextStyle(fontSize: 17.0, color: Colors.red[800])),
+                    onPressed: () {
+                      widget.onSignOutPressed();
+                      Navigator.pop(context, true);
+                    })
+              ],
+            ));
   }
 
   void myShowSnackBar(String messageString) {
@@ -137,7 +137,7 @@ class _CloneUserState extends State<CloneUser> {
               setState(() {
                 privilege = 1;
               });
-              
+
               // String urlString2 =
               //     'http://101.109.115.27:2500/api/flutterget/User=123456';
               // var response2 = await get(urlString2,
@@ -155,7 +155,6 @@ class _CloneUserState extends State<CloneUser> {
               // } else {
               //   myAlert('Error', response2.statusCode.toString());
               // }
-
 
             } else {
               myAlert('Response Fail', 'Token Empty');
@@ -213,9 +212,9 @@ class _CloneUserState extends State<CloneUser> {
 
   Widget showText() {
     return Text(
-      'Clone',
+      'Line User \r\n ยังไม่มีข้อมูลใช้งาน',
       style: TextStyle(
-          fontSize: 45.0,
+          fontSize: 30.0,
           fontWeight: FontWeight.bold,
           color: Colors.brown[800],
           fontFamily: 'PermanentMarker'),
@@ -225,6 +224,14 @@ class _CloneUserState extends State<CloneUser> {
   Widget mySizeBox() {
     return SizedBox(
       width: 8.0,
+    );
+  }
+
+  //height: 200
+
+  Widget mySizeBoxH() {
+    return SizedBox(
+      height: 20.0,
     );
   }
 
@@ -252,7 +259,7 @@ class _CloneUserState extends State<CloneUser> {
           borderRadius: BorderRadius.circular(30.0),
         ),
         child: Text(
-          'สร้างข้อมูล ศูนย์/ส่วน',
+          '',
           style: TextStyle(color: Colors.green.shade900),
         ),
         onPressed: () {
@@ -267,30 +274,70 @@ class _CloneUserState extends State<CloneUser> {
         borderRadius: BorderRadius.circular(30.0),
       ),
       child: Text(
-        'SignOut',
+        'ลงทะเบียน User',
         style: TextStyle(color: Colors.green.shade900),
       ),
       // onPressed: widget.onSignOutPressed,
       onPressed: () {
         print('You Click SignOut');
-        print(widget.userProfile.displayName.toString());
-        widget.onSignOutPressed();
+        //print(widget.userProfile.displayName.toString());
+        // widget.onSignOutPressed();
+
+        // var backHomeRoute = MaterialPageRoute(
+        //     builder: (BuildContext context) =>
+        //         Register(lineid: widget.userProfile.userId));
+        // Navigator.of(context)
+        //     .pushAndRemoveUntil(backHomeRoute, (Route<dynamic> route) => false);
+        var registerRoute =
+            MaterialPageRoute(builder: (BuildContext context) => Register(lineid: widget.userProfile.userId));
+        Navigator.of(context).push(registerRoute);
       },
     );
   }
 
-  Widget myHome(){
+  Widget myHome() {
     return Scaffold(
-        // appBar: AppBar(
-        //   title: Text('Login by $nameString'),
-        // ),
-        body: Center(
-          child: (widget.userProfile.pictureUrl.isNotEmpty)
-          ? Image.network(widget.userProfile.pictureUrl, width: 200, height: 200)
-          : Icon(Icons.person),
-          // child: Text('Login by $nameString'),
+      // appBar: AppBar(
+      //   title: Text('Login by $nameString'),
+      // ),
+      body: Center(
+        child: (widget.userProfile.pictureUrl.isNotEmpty)
+            ? Image.network(widget.userProfile.pictureUrl,
+                width: 200, height: 200)
+            : Icon(Icons.person),
+        // child: Text('Login by $nameString'),
+      ),
+    );
+  }
+
+  Widget myHome2() {
+    return Scaffold(
+      key: scaffoldKey,
+      resizeToAvoidBottomPadding: true,
+      body: Center(
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: RadialGradient(
+              colors: [Colors.white, Colors.green.shade900],
+              radius: 1.2,
+            ),
+          ),
+          alignment: Alignment.center,
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                // showLogo(),
+                showText(),
+                mySizeBoxH(),
+                myButton(),
+              ],
+            ),
+          ),
         ),
-      );
+      ),
+    );
   }
 
   Widget myDrawerHeader() {
@@ -304,9 +351,13 @@ class _CloneUserState extends State<CloneUser> {
       ),
       child: Column(
         children: <Widget>[
-          // showLogo(),
-          // showApp(),
-          // showAbbr(),
+          Text(
+            'Login: $nameString',
+            style: TextStyle(
+              fontSize: 18.0,
+              color: Colors.brown[800],
+            ),
+          ),
         ],
       ),
     );
@@ -323,18 +374,17 @@ class _CloneUserState extends State<CloneUser> {
       title: Text(
         'ลงทะเบียน User',
         style: TextStyle(fontSize: 18.0),
-        ),
+      ),
       // on tap == on click
       onTap: () {
         Navigator.of(context).pop();
         setState(() {
-          myWidget = Register();
+          // myWidget = Register();
           // Navigator.of(context).pop();
         });
       },
     ); // https://material.io/resources/icons/?style=baseline
   }
-
 
   Widget menuFormPage() {
     return ListTile(
@@ -346,7 +396,7 @@ class _CloneUserState extends State<CloneUser> {
       title: Text(
         'นำเข้า ONU',
         style: TextStyle(fontSize: 18.0),
-        ),
+      ),
       // on tap == on click
       onTap: () {
         Navigator.of(context).pop();
@@ -368,7 +418,7 @@ class _CloneUserState extends State<CloneUser> {
       title: Text(
         'จ่าย ONU',
         style: TextStyle(fontSize: 18.0),
-        ),
+      ),
       // on tap == on click
       onTap: () {
         Navigator.of(context).pop();
@@ -390,7 +440,7 @@ class _CloneUserState extends State<CloneUser> {
       title: Text(
         'ติดตั้ง ONU (New)',
         style: TextStyle(fontSize: 18.0),
-        ),
+      ),
       // on tap == on click
       onTap: () {
         Navigator.of(context).pop();
@@ -412,7 +462,7 @@ class _CloneUserState extends State<CloneUser> {
       title: Text(
         'เก็บคืน ONU',
         style: TextStyle(fontSize: 18.0),
-        ),
+      ),
       // on tap == on click
       onTap: () {
         Navigator.of(context).pop();
@@ -434,7 +484,7 @@ class _CloneUserState extends State<CloneUser> {
       title: Text(
         'ตรวจสอบ/ทำความสะอาด ONU',
         style: TextStyle(fontSize: 18.0),
-        ),
+      ),
       // on tap == on click
       onTap: () {
         Navigator.of(context).pop();
@@ -456,7 +506,7 @@ class _CloneUserState extends State<CloneUser> {
       title: Text(
         'นำ ONU ที่ผ่านขั้นตอนที่5 มาใช้ใหม่',
         style: TextStyle(fontSize: 18.0),
-        ),
+      ),
       // on tap == on click
       onTap: () {
         Navigator.of(context).pop();
@@ -478,7 +528,7 @@ class _CloneUserState extends State<CloneUser> {
       title: Text(
         'ออกจาก App',
         style: TextStyle(fontSize: 18.0),
-        ),
+      ),
       // on tap == on click
       onTap: () {
         // widget.onSignOutPressed();
@@ -490,54 +540,53 @@ class _CloneUserState extends State<CloneUser> {
 
   // clearSharePreferance(context);
   void clearSharePreferance(BuildContext context) async {
-    
     SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      
       prefs.clear();
       var backHomeRoute =
           MaterialPageRoute(builder: (BuildContext context) => HomePage());
       Navigator.of(context)
           .pushAndRemoveUntil(backHomeRoute, (Route<dynamic> route) => false);
-      
     });
   }
 
   Widget myDrawer() {
     return Drawer(
       // child: file == null ? Image.asset('images/pic.png') : Image.file(file),
-      child: privilege == 1 ? ListView(
-        children: <Widget>[
-          myDrawerHeader(),
-          // showMenuFood(),
-          // (widget.uid.isEmpty) ? showMenuInfo() : showBack(),
-          // Divider(),
-          menuFormPage(),
-          Divider(),
-          menuListViewPage(),
-          Divider(),
-          menuInstallOnu(),
-          Divider(),
-          menuPickupOnu(),
-          Divider(),
-          menuCleanOnu(),
-          Divider(),
-          menuReuseOnu(),
-          Divider(),
-          menuLogout(),
-          Divider(),
-          // showBack(),
-        ],
-      ) : ListView (
-        children: <Widget>[
-          myDrawerHeader(),
-          listShowUser(),
-          Divider(),
-          // menuLogout(),
-          // Divider(),
-          // showBack(),
-        ],
-      ),
+      child: privilege == 1
+          ? ListView(
+              children: <Widget>[
+                myDrawerHeader(),
+                // showMenuFood(),
+                // (widget.uid.isEmpty) ? showMenuInfo() : showBack(),
+                // Divider(),
+                menuFormPage(),
+                Divider(),
+                menuListViewPage(),
+                Divider(),
+                menuInstallOnu(),
+                Divider(),
+                menuPickupOnu(),
+                Divider(),
+                menuCleanOnu(),
+                Divider(),
+                menuReuseOnu(),
+                Divider(),
+                menuLogout(),
+                Divider(),
+                // showBack(),
+              ],
+            )
+          : ListView(
+              children: <Widget>[
+                myDrawerHeader(),
+                listShowUser(),
+                Divider(),
+                // menuLogout(),
+                // Divider(),
+                // showBack(),
+              ],
+            ),
     );
   }
 
@@ -562,52 +611,23 @@ class _CloneUserState extends State<CloneUser> {
       icon: Icon(Icons.exit_to_app),
       onPressed: () {
         print('test exit press');
-
       },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    // return Scaffold(
-    //   key: scaffoldKey,
-    //   resizeToAvoidBottomPadding: true,
-    //   body: Center(
-    //     child: Container(
-    //       decoration: BoxDecoration(
-    //         gradient: RadialGradient(
-    //           colors: [Colors.white, Colors.green.shade900],
-    //           radius: 1.2,
-    //         ),
-    //       ),
-    //       alignment: Alignment.center,
-    //       child: Form(
-    //         key: formKey,
-    //         child: Column(
-    //           mainAxisSize: MainAxisSize.min,
-    //           children: <Widget>[
-    //             // showLogo(),
-    //             showText(),
-    //             myButton(),
-    //           ],
-    //         ),
-    //       ),
-    //     ),
-    //   ),
-    // );
-    return WillPopScope(
-      onWillPop: _onBackPressed,
     
-      child: privilege == 0 ? new Scaffold(
-
-      body: myWidget,
-      drawer: myDrawer(),
-
-    ) : new Scaffold(
-
-      body: myHome(), // call widget = myhome() in this page
-      drawer: myDrawer(),
-
-    ));
+    return WillPopScope(
+        onWillPop: _onBackPressed,
+        child: privilege == 0
+            ? new Scaffold(
+                body: myHome2(), // call widget = myhome() in this page
+                drawer: myDrawer(),
+              )
+            : new Scaffold(
+                body: myWidget,
+                drawer: myDrawer(),
+              ));
   }
 }

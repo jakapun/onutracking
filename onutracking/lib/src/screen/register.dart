@@ -6,13 +6,12 @@ import 'package:onutracking/src/screen/api_page.dart';
 
 class Register extends StatefulWidget {
 
-  // final String uid;
-  // // final Function fun;
+  final String lineid;
 
-  // Register({
-  //   Key key,
-  //   @required this.uid,
-  // }) : super(key: key);
+  Register({
+    Key key,
+    @required this.lineid,
+  }) : super(key: key);
 
   @override
   _RegisterState createState() => _RegisterState();
@@ -21,7 +20,7 @@ class Register extends StatefulWidget {
 class _RegisterState extends State<Register> {
   // Explicit
   final formKey = GlobalKey<FormState>();
-  String nameString, emailString, passwordString, _mySelection;
+  String nameString, emailString, passwordString, _mySelection, getlineid;
   // FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
   final String url = "http://webmyls.com/php/getdata.php";
@@ -45,6 +44,7 @@ class _RegisterState extends State<Register> {
   @override
   void initState() {
     super.initState();
+    getlineid = widget.lineid;
     this.getSWData();
   }
 
