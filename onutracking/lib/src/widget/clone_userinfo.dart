@@ -13,7 +13,7 @@ import 'package:onutracking/src/screen/install_onu.dart';
 import 'package:onutracking/src/screen/pickup_onu.dart';
 import 'package:onutracking/src/screen/register.dart';
 import 'package:onutracking/src/screen/reused_onu.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
 
 class CloneUser extends StatefulWidget {
   const CloneUser(
@@ -129,11 +129,11 @@ class _CloneUserState extends State<CloneUser> {
             token = token.split(' ').last;
             // print(token);
             if (token.isNotEmpty) {
-              SharedPreferences prefs = await SharedPreferences.getInstance();
-              await prefs.setString('stoken', token);
-              //  read value from store_preference
-              String sValue = prefs.getString('stoken');
-              print(sValue);
+              // SharedPreferences prefs = await SharedPreferences.getInstance();
+              // await prefs.setString('stoken', token);
+              //      //  read value from store_preference
+              // String sValue = prefs.getString('stoken');
+              // print(sValue);
               setState(() {
                 privilege = 1;
               });
@@ -540,9 +540,9 @@ class _CloneUserState extends State<CloneUser> {
 
   // clearSharePreferance(context);
   void clearSharePreferance(BuildContext context) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
-      prefs.clear();
+      // prefs.clear();
       var backHomeRoute =
           MaterialPageRoute(builder: (BuildContext context) => HomePage());
       Navigator.of(context)
