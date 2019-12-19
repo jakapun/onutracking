@@ -27,7 +27,8 @@ dependencies:
   image_picker: ^0.6.1+4
   location: ^2.3.5
   barcode_scan: ^1.0.0
-  # shared_preferences: ^0.5.4
+  shared_preferences: ^0.5.4
+  imei_plugin: ^1.1.6
 
 dev_dependencies:
   flutter_test:

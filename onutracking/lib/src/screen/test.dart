@@ -9,7 +9,7 @@ import 'package:onutracking/src/screen/payed_onu.dart';
 import 'package:onutracking/src/screen/pickup_onu.dart';
 // import 'package:onutracking/src/screen/register.dart';
 import 'package:onutracking/src/screen/reused_onu.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 class Testfull extends StatefulWidget {
@@ -31,6 +31,7 @@ class _TestfullState extends State<Testfull> {
 
   String nameString = '';
   Widget myWidget = APIPage();
+  SharedPreferences prefs;
   // int idLoginInt;
   // String typeString;
 
@@ -46,12 +47,12 @@ class _TestfullState extends State<Testfull> {
 
   Future<void> preAuthen() async {
 
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
 
     setState(() {
 
-    // prefs.setString('sdata', widget.data);
-    // prefs.setString('suid', widget.uid);
+    prefs.setString('sdata', widget.data);
+    prefs.setString('suid', widget.uid);
     });
     
     // String sValue = prefs.getString('stoken');
@@ -288,10 +289,10 @@ class _TestfullState extends State<Testfull> {
   // clearSharePreferance(context);
   void clearSharePreferance(BuildContext context) async {
     
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     setState(() {
       
-      // prefs.clear();
+      prefs.clear();
       var backHomeRoute =
           MaterialPageRoute(builder: (BuildContext context) => App());
       Navigator.of(context)

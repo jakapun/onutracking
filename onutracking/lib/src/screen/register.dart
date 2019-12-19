@@ -5,12 +5,12 @@ import 'dart:convert';
 import 'package:onutracking/src/screen/api_page.dart';
 
 class Register extends StatefulWidget {
-
-  final String lineid;
+  final String lineid, deviceid;
 
   Register({
     Key key,
     @required this.lineid,
+    this.deviceid,
   }) : super(key: key);
 
   @override
@@ -19,11 +19,19 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   // Explicit
+
   final formKey = GlobalKey<FormState>();
-  String nameString, emailString, passwordString, _mySelection, getlineid;
+  String nameStringf,
+      nameStringl,
+      emailString,
+      passwordString,
+      _mySelection,
+      getlineid,
+      getdeviceid;
   // FirebaseAuth firebaseAuth = FirebaseAuth.instance;
 
-  final String url = "http://webmyls.com/php/getdata.php";
+  final String url =
+      "http://8a7a08360daf.sn.mynetname.net:2528/api/getprovince";
 
   List data = List(); //edited line
 
@@ -45,16 +53,43 @@ class _RegisterState extends State<Register> {
   void initState() {
     super.initState();
     getlineid = widget.lineid;
+    getdeviceid = widget.deviceid;
     this.getSWData();
   }
 
   // Method
-  Widget nameText() {
+  Widget nameTextf() {
     return TextFormField(
       decoration: InputDecoration(
-        labelText: 'ชื่อ นามสกุล :',
+        labelText: 'ชื่อ :',
+        labelStyle: TextStyle(color: Colors.orange),
+        helperText: 'Type Firstname',
+        helperStyle: TextStyle(color: Colors.orange),
+        icon: Icon(
+          Icons.face,
+          size: 36.0,
+          color: Colors.orange,
+        ),
+      ),
+      validator: (String value) {
+        if (value.isEmpty) {
+          return 'Type Firstname';
+        } else {
+          return null;
+        }
+      },
+      onSaved: (String value) {
+        nameStringf = value;
+      },
+    );
+  }
+
+  Widget nameTextl() {
+    return TextFormField(
+      decoration: InputDecoration(
+        labelText: 'นามสกุล :',
         labelStyle: TextStyle(color: Colors.pink[400]),
-        helperText: 'Type Firstname Lastname',
+        helperText: 'Type Lastname',
         helperStyle: TextStyle(color: Colors.pink[400]),
         icon: Icon(
           Icons.face,
@@ -64,13 +99,13 @@ class _RegisterState extends State<Register> {
       ),
       validator: (String value) {
         if (value.isEmpty) {
-          return 'Type Firstname,Lastname';
+          return 'Type Lastname';
         } else {
-            return null;
+          return null;
         }
       },
       onSaved: (String value) {
-        nameString = value;
+        nameStringl = value;
       },
     );
   }
@@ -94,7 +129,7 @@ class _RegisterState extends State<Register> {
         if (value.length <= 5) {
           return 'Type Employee Id';
         } else {
-            return null;
+          return null;
         }
       },
       onSaved: (String value) {
@@ -120,7 +155,7 @@ class _RegisterState extends State<Register> {
         if (value.length <= 5) {
           return 'Password Much More 6 Charactor';
         } else {
-            return null;
+          return null;
         }
       },
       onSaved: (String value) {
@@ -129,47 +164,79 @@ class _RegisterState extends State<Register> {
     );
   }
 
-  Widget dropdownButton(){
+  Widget dropdownButton() {
     return DropdownButton(
-        icon: Icon(Icons.arrow_downward),
-        hint: Text('กรุณาเลือก ส่วน/ศูนย์'),
-        iconSize: 36,
-        elevation: 26,
-        style: TextStyle(
-          color: Colors.deepPurple
-        ),
-        underline: Container(
-          height: 2,
-          color: Colors.deepPurpleAccent,
-        ),
-          items: data.map((item) {
-            return new DropdownMenuItem(
-              child: new Text(item['item_name']),
-              value: item['id'].toString(),
-            );
-          }).toList(),
-          onChanged: (newVal) {
-            setState(() {
-              _mySelection = newVal;
-            });
-          },
-          value: _mySelection,
+      icon: Icon(Icons.arrow_downward),
+      hint: Text('กรุณาเลือก จังหวัด'),
+      iconSize: 36,
+      elevation: 26,
+      style: TextStyle(
+        color: Colors.deepPurple,
+        fontSize: 18.0,
+      ),
+      underline: Container(
+        height: 2,
+        color: Colors.deepPurpleAccent,
+      ),
+      items: data.map((item) {
+        return new DropdownMenuItem(
+          child: new Text(item['province']),
+          value: item['EN'],
         );
-
+      }).toList(),
+      onChanged: (newVal) {
+        setState(() {
+          _mySelection = newVal;
+        });
+      },
+      value: _mySelection,
+    );
   }
 
-  Widget uploadButton() {
-    return IconButton(
-      icon: Icon(Icons.cloud_upload),
-      onPressed: () {
-        print('Upload');
-        if (formKey.currentState.validate()) {
-          formKey.currentState.save();
-          print(
-              'Name = $nameString, Email = $emailString, Pass = $passwordString, Drop = $_mySelection');
-          register();
-        }
-      },
+  // Widget uploadButton() {
+  //   return IconButton(
+  //     icon: Icon(Icons.cloud_upload),
+  //     onPressed: () {
+  //       print('Upload');
+  //       if (formKey.currentState.validate()) {
+  //         formKey.currentState.save();
+  //         print(
+  //             'Name = $nameString, Email = $emailString, Pass = $passwordString, Drop = $_mySelection');
+  //         register();
+  //       }
+  //     },
+  //   );
+  // }
+
+  Widget uploadValueButton() {
+    return Row(
+      mainAxisAlignment:
+          MainAxisAlignment.center, // จัดตำแหน่ง FloatingActionButton
+      children: <Widget>[
+        FloatingActionButton(
+          elevation: 15.0,
+          // foregroundColor: Colors.green[900],
+          tooltip: 'กดเพื่อ Register User',
+          child: Icon(
+            Icons.cloud_upload,
+            size: 40.0,
+          ),
+
+          onPressed: () {
+            if (formKey.currentState.validate()) {
+              formKey.currentState.save();
+              if ((getdeviceid.isEmpty) || (getlineid.isEmpty)) {
+                myAlert('มีข้อผิดพลาด',
+                    'ไม่มี Line UserId  \r\n ไม่มี DeviceId \r\n ที่ต้องใช้งาน');
+              } else {
+                print(
+                    'line User id = $getlineid, DeviceID = $getdeviceid, namef = $nameStringf, namel = $nameStringl, totid = $emailString');
+                
+              }
+            }
+          },
+        ),
+      ],
     );
   }
 
@@ -180,8 +247,8 @@ class _RegisterState extends State<Register> {
     //   password: passwordString,
     // )
     //     .then((objResponse) {
-      print('Register Success');
-      setUpDisplayName();
+    print('Register Success');
+    setUpDisplayName();
     // }).catchError((objResponse) {
     //   print('${objResponse.toString()}');
     //   myAlert(objResponse.code.toString(), objResponse.message.toString());
@@ -194,9 +261,10 @@ class _RegisterState extends State<Register> {
     //   updateInfo.displayName = nameString;
     //   response.updateProfile(updateInfo);
 
-      var serviceRoute =
-          MaterialPageRoute(builder: (BuildContext context) => APIPage());
-          Navigator.of(context).pushAndRemoveUntil(serviceRoute, (Route<dynamic> route) => false);
+    var serviceRoute =
+        MaterialPageRoute(builder: (BuildContext context) => APIPage());
+    Navigator.of(context)
+        .pushAndRemoveUntil(serviceRoute, (Route<dynamic> route) => false);
     // });
   }
 
@@ -227,11 +295,11 @@ class _RegisterState extends State<Register> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomPadding: false,
-      // appBar: AppBar(
-      //   backgroundColor: Colors.green[800],
-      //   title: Text('ลงทะเบียน User'),
-      //   actions: <Widget>[uploadButton()],
-      // ),
+      appBar: AppBar(
+        backgroundColor: Colors.green[800],
+        title: Text('ลงทะเบียน User'),
+        // actions: <Widget>[uploadButton()],
+      ),
       body: Form(
         key: formKey,
         child: Container(
@@ -252,11 +320,12 @@ class _RegisterState extends State<Register> {
             height: 700.0,
             child: Column(
               children: <Widget>[
-                nameText(),
+                nameTextf(),
+                nameTextl(),
                 emailText(),
-                passwordText(),
+                // passwordText(),
                 dropdownButton(),
-                uploadButton()
+                uploadValueButton()
               ],
             ),
           ),

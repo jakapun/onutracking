@@ -1,6 +1,7 @@
 // import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_line_sdk/flutter_line_sdk.dart';
 import 'dart:convert';
 import 'package:http/http.dart';
@@ -13,7 +14,8 @@ import 'package:onutracking/src/screen/install_onu.dart';
 import 'package:onutracking/src/screen/pickup_onu.dart';
 import 'package:onutracking/src/screen/register.dart';
 import 'package:onutracking/src/screen/reused_onu.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:imei_plugin/imei_plugin.dart';
 
 class CloneUser extends StatefulWidget {
   const CloneUser(
@@ -36,6 +38,8 @@ class _CloneUserState extends State<CloneUser> {
   String nameString = '';
   Widget myWidget = DefaultHome();
   int privilege = 0;
+  String _platformImei = '';
+  SharedPreferences prefs;
 
   // File file;
   // String name = 'Ebiwayo'; // ข้อความ
@@ -48,7 +52,27 @@ class _CloneUserState extends State<CloneUser> {
     super.initState();
     nameString = widget.userProfile.displayName;
     picurl = widget.userProfile.pictureUrl;
+    initPlatformState();
     checkAuthen();
+  }
+
+  Future<void> initPlatformState() async {
+    String platformImei;
+    // Platform messages may fail, so we use a try/catch PlatformException.
+    try {
+      platformImei = await ImeiPlugin.getImei( shouldShowRequestPermissionRationale: false );
+    } on PlatformException {
+      platformImei = 'Failed to get platform version.';
+    }
+
+    // If the widget was removed from the tree while the asynchronous platform
+    // message was in flight, we want to discard the reply rather than calling
+    // setState to update our non-existent appearance.
+    if (!mounted) return;
+
+    setState(() {
+      _platformImei = platformImei;
+    });
   }
 
   Future<bool> _onBackPressed() {
@@ -110,7 +134,7 @@ class _CloneUserState extends State<CloneUser> {
 
       var body = {
         "username": widget.userProfile.userId.trim(),
-        "password": widget.userProfile.userId.trim()
+        "password": _platformImei
       };
 
       // var response = await get(urlString);
@@ -129,11 +153,11 @@ class _CloneUserState extends State<CloneUser> {
             token = token.split(' ').last;
             // print(token);
             if (token.isNotEmpty) {
-              // SharedPreferences prefs = await SharedPreferences.getInstance();
-              // await prefs.setString('stoken', token);
+              prefs = await SharedPreferences.getInstance();
+              await prefs.setString('stoken', token);
               //      //  read value from store_preference
-              // String sValue = prefs.getString('stoken');
-              // print(sValue);
+              String sValue = prefs.getString('stoken');
+              print(sValue);
               setState(() {
                 privilege = 1;
               });
@@ -212,7 +236,7 @@ class _CloneUserState extends State<CloneUser> {
 
   Widget showText() {
     return Text(
-      'Line User \r\n ยังไม่มีข้อมูลใช้งาน',
+      'Line User ที่กำลัง\r\n login ไม่มีสิทธิใช้ App',
       style: TextStyle(
           fontSize: 30.0,
           fontWeight: FontWeight.bold,
@@ -289,7 +313,7 @@ class _CloneUserState extends State<CloneUser> {
         // Navigator.of(context)
         //     .pushAndRemoveUntil(backHomeRoute, (Route<dynamic> route) => false);
         var registerRoute =
-            MaterialPageRoute(builder: (BuildContext context) => Register(lineid: widget.userProfile.userId));
+            MaterialPageRoute(builder: (BuildContext context) => Register(lineid: widget.userProfile.userId, deviceid: _platformImei));
         Navigator.of(context).push(registerRoute);
       },
     );
@@ -532,7 +556,7 @@ class _CloneUserState extends State<CloneUser> {
       // on tap == on click
       onTap: () {
         // widget.onSignOutPressed();
-        // clearSharePreferance(context);
+        clearSharePreferance(context);
         Navigator.of(context).pop();
       },
     ); // https://material.io/resources/icons/?style=baseline
@@ -540,9 +564,9 @@ class _CloneUserState extends State<CloneUser> {
 
   // clearSharePreferance(context);
   void clearSharePreferance(BuildContext context) async {
-    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs = await SharedPreferences.getInstance();
     setState(() {
-      // prefs.clear();
+      prefs.clear();
       var backHomeRoute =
           MaterialPageRoute(builder: (BuildContext context) => HomePage());
       Navigator.of(context)
