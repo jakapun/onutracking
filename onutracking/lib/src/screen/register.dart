@@ -231,7 +231,7 @@ class _RegisterState extends State<Register> {
               } else {
                 print(
                     'line User id = $getlineid, DeviceID = $getdeviceid, namef = $nameStringf, namel = $nameStringl, totid = $emailString');
-                
+                register();
               }
             }
           },
@@ -241,18 +241,40 @@ class _RegisterState extends State<Register> {
   }
 
   Future<void> register() async {
-    // await firebaseAuth
-    //     .createUserWithEmailAndPassword(
-    //   email: emailString,
-    //   password: passwordString,
-    // )
-    //     .then((objResponse) {
-    print('Register Success');
-    setUpDisplayName();
-    // }).catchError((objResponse) {
-    //   print('${objResponse.toString()}');
-    //   myAlert(objResponse.code.toString(), objResponse.message.toString());
-    // });
+    // http://8a7a08360daf.sn.mynetname.net:2528/api/getprovince";
+    String urlpost = "http://8a7a08360daf.sn.mynetname.net:2528/api/signup";
+    String fullname = '$nameStringf $nameStringl';
+    var body = {
+      "fullname": fullname,
+      "username": getlineid,
+      "password": getdeviceid,
+      "province": _mySelection.trim(),
+      "fname": nameStringf.trim(),
+      "deviceid": getdeviceid
+    };
+    //setUpDisplayName();
+    // var response = await get(urlString);
+    var response = await http.post(urlpost, body: body);
+
+    if (response.statusCode == 200) {
+      print(response.statusCode);
+      var result = json.decode(response.body);
+      // print('result = $result');
+
+      if (result.toString() == 'null') {
+        myAlert('Not Insert', 'No Create in my Database');
+      } else {
+        if (result['status']) {
+          String getmessage = result['message'];
+          myAlert('OK', '$getmessage');
+        } else {
+          myAlert('Not OK', 'message = Null');
+        }
+      }
+    } else {
+      //check respond = 200
+      myAlert('Error', response.statusCode.toString());
+    }
   }
 
   Future<void> setUpDisplayName() async {

@@ -5,9 +5,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_line_sdk/flutter_line_sdk.dart';
 import 'dart:convert';
 import 'package:http/http.dart';
+import 'package:onutracking/src/app.dart';
 import 'package:onutracking/src/default_home.dart';
 import 'package:onutracking/src/screen/clean_onu.dart';
-import 'package:onutracking/src/screen/home_page.dart';
 import 'package:onutracking/src/screen/import_onu.dart';
 import 'package:onutracking/src/screen/install_onu.dart';
 // import 'package:onutracking/src/screen/payed_onu.dart';
@@ -35,7 +35,7 @@ class _CloneUserState extends State<CloneUser> {
   final scaffoldKey = GlobalKey<ScaffoldState>();
   var uid = '';
   var picurl = '';
-  String nameString = '';
+  String nameString = '', getlineid = '';
   Widget myWidget = DefaultHome();
   int privilege = 0;
   String _platformImei = '';
@@ -52,8 +52,9 @@ class _CloneUserState extends State<CloneUser> {
     super.initState();
     nameString = widget.userProfile.displayName;
     picurl = widget.userProfile.pictureUrl;
+    getlineid = widget.userProfile.userId;
     initPlatformState();
-    checkAuthen();
+    //checkAuthen();
   }
 
   Future<void> initPlatformState() async {
@@ -91,8 +92,9 @@ class _CloneUserState extends State<CloneUser> {
                     child: Text('Yes',
                     style: TextStyle(fontSize: 17.0, color: Colors.red[800])),
                     onPressed: () {
-                      widget.onSignOutPressed();
-                      Navigator.pop(context, true);
+                      clearSharePreferance(context);
+                      // widget.onSignOutPressed();
+                      // Navigator.pop(context, true);
                     })
               ],
             ));
@@ -113,13 +115,11 @@ class _CloneUserState extends State<CloneUser> {
   }
 
   Future<void> checkAuthen() async {
-    // child: file == null ? Image.asset('images/pic.png') : Image.file(file),
-    // child: codeCenter == null ? Image.asset('images/pic.png') : Image.asset('images/pic.png'),
-    // widget.userProfile.userId;
-    if (widget.userProfile.userId.length <= 5) {
-      print('userId Line not Found');
-      // myShowSnackBar('username && password ต้องไม่เท่ากับ ว่าง');
+    if ((_platformImei.length <= 5) || ( getlineid.length <= 5)) {
+      print('user = $getlineid, password = $_platformImei');
+      myShowSnackBar('$getlineid $_platformImei');
     } else {
+      
       /*
     str1.toLowerCase(); // lorem
     str1.toUpperCase(); // LOREM
@@ -129,12 +129,13 @@ class _CloneUserState extends State<CloneUser> {
 
     101.109.115.27:2500/api/flutterget/User=123456
     */
-
-      String urlString = 'http://101.109.115.27:2500/api/signin';
+      // uid: user.fname, prv: user.province, priv: user.privilege
+      String urlString = 'http://8a7a08360daf.sn.mynetname.net:2528/api/signin';
 
       var body = {
-        "username": widget.userProfile.userId.trim(),
-        "password": _platformImei
+        "username": getlineid,
+        "password": _platformImei.trim(),
+        "deviceid": _platformImei.trim()
       };
 
       // var response = await get(urlString);
@@ -146,24 +147,30 @@ class _CloneUserState extends State<CloneUser> {
         // print('result = $result');
 
         if (result.toString() == 'null') {
-          myAlert('User False', 'No username in Backend Database');
+          myAlert('User False', 'No Username in my Database');
         } else {
-          if (result['status']) {
+        
+            if (result['status']) {
             String token = result['token'];
             token = token.split(' ').last;
             // print(token);
             if (token.isNotEmpty) {
               prefs = await SharedPreferences.getInstance();
               await prefs.setString('stoken', token);
-              //      //  read value from store_preference
-              String sValue = prefs.getString('stoken');
-              print(sValue);
-              setState(() {
-                privilege = 1;
-              });
-
+              //  read value from store_preference
+              //  uid: user.fname, prv: user.province, priv: user.privilege
+              await prefs.setString('suid', result['uid']);
+              await prefs.setString('sprv', result['prv']);
+              await prefs.setInt(
+                  'spriv', result['priv']); //store preference Integer
+              await prefs.setString('srelate', result['relate']);
+              await prefs.setString('sfulln', result['fullname']);
+              // String sValue = prefs.getString('stoken');
+              // print(sValue);
+              // print(prefs.getInt('spriv').toString());
+              
               // String urlString2 =
-              //     'http://101.109.115.27:2500/api/flutterget/User=123456';
+              //     'http://8a7a08360daf.sn.mynetname.net:2528/api/flutterget/123456';
               // var response2 = await get(urlString2,
               //     headers: {HttpHeaders.authorizationHeader: "JWT $sValue"});
               // if (response2.statusCode == 200) {
@@ -180,22 +187,20 @@ class _CloneUserState extends State<CloneUser> {
               //   myAlert('Error', response2.statusCode.toString());
               // }
 
+              setState(() {
+                privilege = 1;
+              });
             } else {
-              myAlert('Response Fail', 'Token Empty');
+              myAlert('Respond Fail', 'Backend Not Reply,Session empty');
             }
           } else {
-            print(result['error']);
-            setState(() {
-              privilege = 0;
-            });
+            // print(result['error']);
+            myAlert('Error', response.statusCode.toString());
           }
         } // End else result.toString() != 'null'
       } else {
         //check respond = 200
-        // myAlert('Error', response.statusCode.toString());
-        setState(() {
-          privilege = 0;
-        });
+        myAlert('Error->Backend error', response.statusCode.toString());
       }
     } // End If check emailstring.length
   }
@@ -236,9 +241,9 @@ class _CloneUserState extends State<CloneUser> {
 
   Widget showText() {
     return Text(
-      'Line User ที่กำลัง\r\n login ไม่มีสิทธิใช้ App',
+      'ตรวจสอบสิทธิ Line User\r\n นี้กดปุ่ม Check ถ้าไม่มี\r\n สิทธิ ให้ปัดขอบจอซ้าย \r\n เลือกลงทะเบียน',
       style: TextStyle(
-          fontSize: 30.0,
+          fontSize: 28.0,
           fontWeight: FontWeight.bold,
           color: Colors.brown[800],
           fontFamily: 'PermanentMarker'),
@@ -283,11 +288,11 @@ class _CloneUserState extends State<CloneUser> {
           borderRadius: BorderRadius.circular(30.0),
         ),
         child: Text(
-          '',
+          'check',
           style: TextStyle(color: Colors.green.shade900),
         ),
         onPressed: () {
-          print('You Click SignIn');
+          checkAuthen();
         });
   }
 
@@ -298,7 +303,7 @@ class _CloneUserState extends State<CloneUser> {
         borderRadius: BorderRadius.circular(30.0),
       ),
       child: Text(
-        'ลงทะเบียน User',
+        '',
         style: TextStyle(color: Colors.green.shade900),
       ),
       // onPressed: widget.onSignOutPressed,
@@ -312,9 +317,9 @@ class _CloneUserState extends State<CloneUser> {
         //         Register(lineid: widget.userProfile.userId));
         // Navigator.of(context)
         //     .pushAndRemoveUntil(backHomeRoute, (Route<dynamic> route) => false);
-        var registerRoute =
-            MaterialPageRoute(builder: (BuildContext context) => Register(lineid: widget.userProfile.userId, deviceid: _platformImei));
-        Navigator.of(context).push(registerRoute);
+        // var registerRoute =
+        //     MaterialPageRoute(builder: (BuildContext context) => Register(lineid: widget.userProfile.userId, deviceid: _platformImei));
+        // Navigator.of(context).push(registerRoute);
       },
     );
   }
@@ -401,7 +406,10 @@ class _CloneUserState extends State<CloneUser> {
       ),
       // on tap == on click
       onTap: () {
-        Navigator.of(context).pop();
+        // Navigator.of(context).pop();
+        var registerRoute =
+            MaterialPageRoute(builder: (BuildContext context) => Register(lineid: widget.userProfile.userId, deviceid: _platformImei));
+        Navigator.of(context).push(registerRoute);
         setState(() {
           // myWidget = Register();
           // Navigator.of(context).pop();
@@ -557,18 +565,19 @@ class _CloneUserState extends State<CloneUser> {
       onTap: () {
         // widget.onSignOutPressed();
         clearSharePreferance(context);
-        Navigator.of(context).pop();
+        // Navigator.of(context).pop();
       },
     ); // https://material.io/resources/icons/?style=baseline
   }
 
   // clearSharePreferance(context);
   void clearSharePreferance(BuildContext context) async {
+    widget.onSignOutPressed();
     prefs = await SharedPreferences.getInstance();
     setState(() {
       prefs.clear();
       var backHomeRoute =
-          MaterialPageRoute(builder: (BuildContext context) => HomePage());
+          MaterialPageRoute(builder: (BuildContext context) => App());
       Navigator.of(context)
           .pushAndRemoveUntil(backHomeRoute, (Route<dynamic> route) => false);
     });
